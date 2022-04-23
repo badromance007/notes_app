@@ -11,13 +11,21 @@ function App() {
   const [currentNoteId, setCurrentNoteId] = useState((notes[0] && notes[0].id) || '')
 
   useEffect(() => {
-    document.title = 'Notes App'
+    document.title = getNoteTitle(notes[0]) || 'Notes App'
   }, [])
 
   useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes))
+
+    if (!notes.length) {
+      document.title = 'Notes App'
+    }
   }, [notes])
 
+
+  function getNoteTitle(note) {
+    return note && note.body.split('\n')[0]
+  }
 
   function createNewNote() {
     const newNote = {
@@ -29,9 +37,15 @@ function App() {
   }
 
   function findCurrentNote() {
-    return notes.find(note => {
+    const currentNote = notes.find(note => {
       return note.id === currentNoteId
     }) || notes[0]
+
+    // update title based on note's title
+    if (currentNote)
+      document.title =  getNoteTitle(currentNote)
+
+    return currentNote
   }
 
   function updateNote(text) {
